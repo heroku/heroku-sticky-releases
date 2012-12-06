@@ -54,7 +54,7 @@ class Heroku::Command::Ps < Heroku::Command::Base
     end
 
     action(message) do
-      api.post_ps_restart(app, options.merge(:ps_release => release))
+      api.post_ps_restart(app, options.merge(:release => release))
     end
   end
 
@@ -99,7 +99,7 @@ class Heroku::Command::Run < Heroku::Command::Base
     opts = { :attach => false, :command => command }
     release = options[:release]
     process_data = action("Running `#{command}` detached", :success => "up") do
-      process_data = api.post_ps(app, command, { :attach => false, :ps_release => release }).body
+      process_data = api.post_ps(app, command, { :attach => false, :release => release }).body
       status(process_data['process'])
       process_data
     end
@@ -110,7 +110,7 @@ protected
   def run_attached(command)
     release = options[:release]
     process_data = action("Running `#{command}` attached to terminal", :success => "up") do
-      process_data = api.post_ps(app, command, { :attach => true, :ps_env => get_terminal_environment, :ps_release => release }).body
+      process_data = api.post_ps(app, command, { :attach => true, :ps_env => get_terminal_environment, :release => release }).body
       status(process_data["process"])
       process_data
     end
