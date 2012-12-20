@@ -42,19 +42,28 @@ class Heroku::Command::Ps < Heroku::Command::Base
     validate_arguments!
     release = options[:release]
 
-    message, options = case process
+    restarts = case process
     when NilClass
-      ["Restarting processes", { }]
+      [["Restarting processes", { }]]
     when /.+\..+/
-      ps = args.first
-      ["Restarting #{ps} process", { :ps => ps }]
+      processes = args.first
+      if processes =~ /(.*)\.(\d+\-\d+)/
+        type = $1
+        processes = $2.split("-").map{|p| "#{type}.#{p}" }
+      else
+        processes = [processes]
+      end
+      processes.map do |ps|
+        ["Restarting #{ps} process", { :ps => ps }]
+      end
     else
       type = args.first
-      ["Restarting #{type} processes", { :type => type }]
+      [["Restarting #{type} processes", { :type => type }]]
     end
-
-    action(message) do
-      api.post_ps_restart(app, options.merge(:release => release))
+    restarts.each do |message, options|
+      action(message) do
+        api.post_ps_restart(app, options.merge(:release => release))
+      end
     end
   end
 
