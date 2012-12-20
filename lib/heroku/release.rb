@@ -58,7 +58,15 @@ class Heroku::Command::Ps < Heroku::Command::Base
       end
     else
       type = args.first
-      [["Restarting #{type} processes", { :type => type }]]
+      if type =~ /\A\-(.*)/
+        types = api.get_ps(app).body.map{|ps| ps["process"].split(".")[0] }.uniq
+        types.reject!{|type| type == $1 }
+        types.map do |type|
+          ["Restarting #{type} processes", { :type => type }]
+        end
+      else
+        [["Restarting #{type} processes", { :type => type }]]
+      end
     end
     restarts.each do |message, options|
       action(message) do
