@@ -42,40 +42,21 @@ class Heroku::Command::Ps < Heroku::Command::Base
     validate_arguments!
     release = options[:release]
 
-    restarts = case process
+    message, options = case process
     when NilClass
-      [["Restarting processes", { }]]
+      ["Restarting processes", { }]
     when /.+\..+/
-      processes = args.first
-      if processes =~ /(.*)\.(\d+\-\d+)/
-        type = $1
-        processes = $2.split("-").map{|p| "#{type}.#{p}" }
-      else
-        processes = [processes]
-      end
-      processes.map do |ps|
-        ["Restarting #{ps} process", { :ps => ps }]
-      end
+      ps = args.first
+      ["Restarting #{ps} process", { :ps => ps }]
     else
       type = args.first
-      if type =~ /\A\-(.*)/
-        types = api.get_ps(app).body.map{|ps| ps["process"].split(".")[0] }.uniq
-        types.reject!{|type| type == $1 }
-        types.map do |type|
-          ["Restarting #{type} processes", { :type => type }]
-        end
-      else
-        [["Restarting #{type} processes", { :type => type }]]
-      end
+      ["Restarting #{type} processes", { :type => type }]
     end
-    restarts.each do |message, options|
-      action(message) do
-        api.post_ps_restart(app, options.merge(:release => release))
-      end
+
+    action(message) do
+      api.post_ps_restart(app, options.merge(:release => release))
     end
   end
-
-  alias_command "deploy", "ps:restart"
 
   def scale
     release = options[:release]
