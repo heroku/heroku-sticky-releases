@@ -58,8 +58,6 @@ class Heroku::Command::Ps < Heroku::Command::Base
     end
   end
 
-  alias_command "deploy", "ps:restart"
-
   def scale
     release = options[:release]
     changes = {}
