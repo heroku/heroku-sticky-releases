@@ -1,5 +1,4 @@
 require "heroku/command/base"
-Heroku::Command.global_option :release, "--release RELEASE", "-r"
 
 # deploy release into production
 class Heroku::Command::Deploy < Heroku::Command::Base
@@ -10,6 +9,8 @@ class Heroku::Command::Deploy < Heroku::Command::Base
   #
   # if PROCESS is not specified, RELEASE is deployed to all processes on the app
   # if RELEASE is not specified, latest release is used
+
+  # -v, --version           # release to deploy to
   #
   #Examples:
   #
@@ -33,7 +34,7 @@ class Heroku::Command::Deploy < Heroku::Command::Base
   def index
     process = shift_argument
     validate_arguments!
-    release = options[:release]
+    release = options[:version]
 
     deploys = case process
     when NilClass
