@@ -51,7 +51,7 @@ class Heroku::Command::Ps < Heroku::Command::Base
   #
   # restart an app process
   #
-  # -v, --version           # release to restart on
+  # -v, --version VERSION           # release to restart on
   #
   # if PROCESS is not specified, restarts all processes on the app
   #
@@ -70,6 +70,8 @@ class Heroku::Command::Ps < Heroku::Command::Base
     process = shift_argument
     validate_arguments!
     release = options[:version]
+
+    puts "release=#{options.inspect}"
 
     message, options = case process
     when NilClass
@@ -91,7 +93,7 @@ class Heroku::Command::Ps < Heroku::Command::Base
   #
   # scale processes by the given amount
   #
-  # -v, --version           # release to scale
+  # -v, --version VERSION           # release to scale to
   #
   #Examples:
   #
@@ -138,7 +140,7 @@ class Heroku::Command::Run < Heroku::Command::Base
   #
   # run an attached process
   #
-  # -v, --version           # release to run
+  # -v, --version VERSION           # release to run on
   #
   #Example:
   #
@@ -156,7 +158,8 @@ class Heroku::Command::Run < Heroku::Command::Base
   #
   # run a detached process, where output is sent to your logs
   #
-  # -t, --tail           # stream logs for the process
+  # -t, --tail                      # stream logs for the process
+  # -v, --version VERSION           # release to run on
   #
   #Example:
   #

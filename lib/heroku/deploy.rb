@@ -9,8 +9,8 @@ class Heroku::Command::Deploy < Heroku::Command::Base
   #
   # if PROCESS is not specified, RELEASE is deployed to all processes on the app
   # if RELEASE is not specified, latest release is used
-
-  # -v, --version           # release to deploy to
+  #
+  # -v, --version VERSION           # release to deploy to
   #
   #Examples:
   #
