@@ -1,10 +1,20 @@
 require "heroku/command/base"
 
-Heroku::Command.global_option :release, "--release RELEASE", "-r"
-
-
 class Heroku::Command::Ps < Heroku::Command::Base
 
+  # ps
+  #
+  # list processes for an app
+  #
+  #Example:
+  #
+  # $ heroku ps
+  # === run: one-off processes
+  # run.1: up for 5m: `bash`
+  #
+  # === web: `bundle exec thin start -p $PORT`
+  # web.1: created for 30s
+  #
   def index
     validate_arguments!
     processes = api.get_ps(app).body
@@ -37,6 +47,25 @@ class Heroku::Command::Ps < Heroku::Command::Base
     end
   end
 
+  # ps:restart [PROCESS]
+  #
+  # restart an app process
+  #
+  # -r, --release           # release to restart on
+  #
+  # if PROCESS is not specified, restarts all processes on the app
+  #
+  #Examples:
+  #
+  # $ heroku ps:restart web.1
+  # Restarting web.1 process... done
+  #
+  # $ heroku ps:restart web
+  # Restarting web processes... done
+  #
+  # $ heroku ps:restart
+  # Restarting processes... done
+  #
   def restart
     process = shift_argument
     validate_arguments!
@@ -58,6 +87,18 @@ class Heroku::Command::Ps < Heroku::Command::Base
     end
   end
 
+  # ps:scale PROCESS1=AMOUNT1 [PROCESS2=AMOUNT2 ...]
+  #
+  # scale processes by the given amount
+  #
+  # -r, --release           # release to scale
+  #
+  #Examples:
+  #
+  # $ heroku ps:scale web=3 worker+1
+  # Scaling web processes... done, now running 3
+  # Scaling worker processes... done, now running 1
+  #
   def scale
     release = options[:release]
     changes = {}
@@ -93,6 +134,36 @@ end
 
 class Heroku::Command::Run < Heroku::Command::Base
 
+  # run COMMAND
+  #
+  # run an attached process
+  #
+  # -r, --release           # release to run
+  #
+  #Example:
+  #
+  # $ heroku run bash
+  # Running `bash` attached to terminal... up, run.1
+  # ~ $
+  #
+  def index
+    command = args.join(" ")
+    error("Usage: heroku run COMMAND") if command.empty?
+    run_attached(command)
+  end
+
+  # run:detached COMMAND
+  #
+  # run a detached process, where output is sent to your logs
+  #
+  # -t, --tail           # stream logs for the process
+  #
+  #Example:
+  #
+  # $ heroku run:detached ls
+  # Running `ls` detached... up, run.1
+  # Use `heroku logs -p run.1` to view the output.
+  #
   def detached
     command = args.join(" ")
     error("Usage: heroku run COMMAND")if command.empty?
