@@ -51,7 +51,7 @@ class Heroku::Command::Ps < Heroku::Command::Base
   #
   # restart an app process
   #
-  # -r, --release           # release to restart on
+  # -v, --version           # release to restart on
   #
   # if PROCESS is not specified, restarts all processes on the app
   #
@@ -69,7 +69,7 @@ class Heroku::Command::Ps < Heroku::Command::Base
   def restart
     process = shift_argument
     validate_arguments!
-    release = options[:release]
+    release = options[:version]
 
     message, options = case process
     when NilClass
@@ -91,7 +91,7 @@ class Heroku::Command::Ps < Heroku::Command::Base
   #
   # scale processes by the given amount
   #
-  # -r, --release           # release to scale
+  # -v, --version           # release to scale
   #
   #Examples:
   #
@@ -100,7 +100,7 @@ class Heroku::Command::Ps < Heroku::Command::Base
   # Scaling worker processes... done, now running 1
   #
   def scale
-    release = options[:release]
+    release = options[:version]
     changes = {}
     args.each do |arg|
       if arg =~ /^([a-zA-Z0-9_]+)([=+-]\d+)$/
@@ -138,7 +138,7 @@ class Heroku::Command::Run < Heroku::Command::Base
   #
   # run an attached process
   #
-  # -r, --release           # release to run
+  # -v, --version           # release to run
   #
   #Example:
   #
@@ -168,7 +168,7 @@ class Heroku::Command::Run < Heroku::Command::Base
     command = args.join(" ")
     error("Usage: heroku run COMMAND")if command.empty?
     opts = { :attach => false, :command => command }
-    release = options[:release]
+    release = options[:version]
     process_data = action("Running `#{command}` detached", :success => "up") do
       process_data = api.post_ps(app, command, { :attach => false, :release => release }).body
       status(process_data['process'])
@@ -179,7 +179,7 @@ class Heroku::Command::Run < Heroku::Command::Base
 
 protected
   def run_attached(command)
-    release = options[:release]
+    release = options[:version]
     process_data = action("Running `#{command}` attached to terminal", :success => "up") do
       process_data = api.post_ps(app, command, { :attach => true, :ps_env => get_terminal_environment, :release => release }).body
       status(process_data["process"])
