@@ -71,8 +71,6 @@ class Heroku::Command::Ps < Heroku::Command::Base
     validate_arguments!
     release = options[:version]
 
-    puts "release=#{options.inspect}"
-
     message, options = case process
     when NilClass
       ["Restarting processes", { }]
